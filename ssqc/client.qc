@@ -734,6 +734,16 @@ void () DecodeLevelParms = {
 
         max_active_gren2_soldier = CF_GetSetting("mg2s","max_active_gren2_soldier", "3");
 
+        // lag compensation toggles
+        fte_lc_asscann = CF_GetSetting("lc_asscannon", "lc_asscannon", "1");
+        fte_lc_pipebombs = CF_GetSetting("lc_pipebombs", "lc_pipebombs", "1");
+        fte_lc_tranq = CF_GetSetting("lc_tranq", "lc_tranq", "1");
+        fte_lc_railgun = CF_GetSetting("lc_railgun", "lc_railgun", "1");
+        fte_lc_nailgun = CF_GetSetting("lc_nailgun", "lc_nailgun", "0");
+        fte_lc_rockets = CF_GetSetting("lc_rockets", "lc_rockets", "0");
+        fte_lc_grenades = CF_GetSetting("lc_grenades", "lc_grenades", "0");
+        fte_lc_normal_grenades = CF_GetSetting("lc_normal_grenades", "lc_normal_grenades", "0");
+
         st = infokey(world, "default");
         if (st == "on") {
             impulse_queue = FALSE;
