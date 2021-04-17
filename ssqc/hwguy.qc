@@ -16,8 +16,12 @@ void AssCanBulletTouch()
     deathmsg = self.weapon;
     if (other.health)
     {
-        TF_T_Damage(other, self.owner, self.owner, 8, TF_TD_NOTTEAM,
+        if (fte_lc_asscann) 
+            TF_T_Damage(other, self.owner, self.owner, 8, TF_TD_NOTTEAM,
                     TF_TD_OTHER);
+        else 
+            TF_T_Damage(other, self, self.owner, 8, TF_TD_NOTTEAM,
+                TF_TD_OTHER);
         WriteByte(MSG_MULTICAST, SVC_TEMPENTITY);
         WriteByte(MSG_MULTICAST, TE_BLOOD);
         WriteByte(MSG_MULTICAST, 1);
