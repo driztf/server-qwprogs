@@ -1532,9 +1532,9 @@ void () superspike_touch = {
             TF_T_Damage(other, self, self.owner.owner, ndmg, TF_TD_NOTTEAM,
                         TF_TD_NAIL);
         else {
-            if (fte_lc_nailgun) {
-                TF_T_Damage(other, self.owner, self.owner, ndmg, TF_TD_NOTTEAM,
-                    TF_TD_NAIL);
+            if (fte_lc_nailgun_experimental_inflictor && fte_lc_nailgun) {
+                 TF_T_Damage(other, self.owner, self.owner, ndmg, TF_TD_NOTTEAM,
+                     TF_TD_NAIL);
             } else {
                 TF_T_Damage(other, self, self.owner, ndmg, TF_TD_NOTTEAM,
                             TF_TD_NAIL);
