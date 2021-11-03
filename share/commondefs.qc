@@ -71,3 +71,7 @@
 #define CLIENT_MENU_CAPTAIN_2    22
 #define CLIENT_MENU_CAPTAIN_PICK   23
 #define CLIENT_MENU_MAPS           24
+
+#define CLASS_ROCKET 1
+#define CLASS_EXPLOSION 2
+#define CLASS_FLAGINFO 3

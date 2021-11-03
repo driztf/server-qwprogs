@@ -472,3 +472,5 @@ float (entity targ, entity inflictor) CanDamage;
 
 // enable qw in fteextensions
 #define QUAKEWORLD
+
+#define FULLSEND 0xffffff

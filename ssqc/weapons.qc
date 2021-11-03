@@ -164,6 +164,9 @@ void () W_Precache = {
     precache_sound("misc/killsoundteam.wav");
 };
 
+.vector source;
+.float starttime;
+
 float () crandom = {
     return (2 * (random() - 0.5));
 };
@@ -1039,8 +1042,64 @@ void () s_explode6 =[5, SUB_Remove] {
     }
 };
 
-void () BecomeExplosion = {
-    dremove(self);
+float(entity toplayer) SendRocket =
+{
+	vector v;
+	v = self.source + self.velocity*(time-self.starttime);
+	WriteByte(MSG_ENTITY, CLASS_ROCKET);
+	WriteCoord(MSG_ENTITY, v_x);
+	WriteCoord(MSG_ENTITY, v_y);
+	WriteCoord(MSG_ENTITY, v_z);
+	WriteCoord(MSG_ENTITY, self.angles_x);	//we might get better precision if we were to writecoord some point ahead that it should pass through, but this is smaller and accurate enough.
+	WriteCoord(MSG_ENTITY, self.angles_y);
+
+	return TRUE;
+};
+
+float(entity toplayer) SendExplosion =
+{
+	vector v;
+	v = self.origin;
+	WriteByte(MSG_ENTITY, CLASS_EXPLOSION);
+	WriteCoord(MSG_ENTITY, v_x);
+	WriteCoord(MSG_ENTITY, v_y);
+	WriteCoord(MSG_ENTITY, v_z);
+
+	return TRUE;
+};
+
+void() BecomeExplosion =
+{
+	self.movetype = MOVETYPE_NONE;
+	self.velocity = '0 0 0';
+	self.touch = SUB_Null;
+	self.solid = SOLID_NOT;
+
+	self.dimension_seen = 2;
+	dimension_send = 2;
+
+#if 1
+	WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
+	WriteByte (MSG_BROADCAST, TE_EXPLOSION);
+	WriteCoord (MSG_BROADCAST, self.origin_x);
+	WriteCoord (MSG_BROADCAST, self.origin_y);
+	WriteCoord (MSG_BROADCAST, self.origin_z);
+#else
+	te_explosion(self.origin);
+#endif
+
+	sound (self, CHAN_WEAPON, "weapons/r_exp3.wav", 1, ATTN_NORM);
+	self.dimension_seen = 3;
+	dimension_send = 3;
+
+	setmodel (self, "progs/s_explod.spr");
+	s_explode1 ();
+
+//set up the fields required for transmitting the event.
+	self.source = self.origin;
+	self.SendEntity = SendExplosion;
+	self.starttime = time;
+	self.SendFlags = FULLSEND;
 };
 
 void () T_MissileTouch = {
@@ -1069,20 +1128,26 @@ void () T_MissileTouch = {
 
     self.origin = self.origin - 8 * normalize(self.velocity);
 
-    WriteByte(MSG_MULTICAST, SVC_TEMPENTITY);
-    WriteByte(MSG_MULTICAST, TE_EXPLOSION);
-    WriteCoord(MSG_MULTICAST, self.origin_x);
-    WriteCoord(MSG_MULTICAST, self.origin_y);
-    WriteCoord(MSG_MULTICAST, self.origin_z);
-    multicast(self.origin, MULTICAST_PHS);
+//     WriteByte(MSG_MULTICAST, SVC_TEMPENTITY);
+//     WriteByte(MSG_MULTICAST, TE_EXPLOSION);
+//     WriteCoord(MSG_MULTICAST, self.origin_x);
+//     WriteCoord(MSG_MULTICAST, self.origin_y);
+//     WriteCoord(MSG_MULTICAST, self.origin_z);
+//     multicast(self.origin, MULTICAST_PHS);
 
-    dremove(self);
+//     dremove(self);   
+
+    BecomeExplosion (); 
 };
+
+
+
+
 
 void () W_FireRocket = {
     self.ammo_rockets = self.ammo_rockets - 1;
     self.currentammo = self.ammo_rockets;
-    FO_Sound(self, CHAN_WEAPON, "weapons/sgun1.wav", 1, ATTN_NORM);
+    //FO_Sound(self, CHAN_WEAPON, "weapons/sgun1.wav", 1, ATTN_NORM);
     KickPlayer(-2, self);
 
     newmis = spawn();
@@ -1110,6 +1175,11 @@ void () W_FireRocket = {
     if (project_weapons) {
         AL_ProjectProjectile(newmis);
     }
+
+    newmis.source = newmis.origin;
+	newmis.SendEntity = SendRocket;
+	newmis.starttime = time;
+	newmis.SendFlags = FULLSEND;
 };
 
 void (entity from, float damage) LightningHit = {
