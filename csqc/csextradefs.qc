@@ -95,6 +95,7 @@ float mapvote_expiry;
 float grentimer_waiting; //grenade primed, but not thrown
 float jump_counter;
 float frames_since_onground;
+float time_of_last_rocket;
 float num_mapvotes;
 float num_mapvotes_filtered;
 entity vote_selected_item;
@@ -112,6 +113,8 @@ string vote_list_filter;
 .float max_val;
 .float votecount;
 .float localmap;
+.float starttime;
+.vector source;
 
 float(string) GetDrawPanel;
 void(string id, string identify) Hud_DrawIdentifyPanel;
@@ -123,6 +126,8 @@ void (string panelid) Hud_DrawMapMenuPanel;
 float(string id, vector pos, vector size, float alpha, float enabled) hud_panel;
 vector(float panelid) getPosition;
 vector(float panelid) getFillSize;
+
+.void() removefunc;
 
 void () SUB_Null = {
 };

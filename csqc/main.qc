@@ -332,17 +332,37 @@ noref float(string cmd) CSQC_ConsoleCommand = {
     return FALSE;
 };
 
+.float classnum;
+
 void(float isnew) CSQC_Ent_Update = {
     print("CSQC_Ent_Update, new: ", ftos(isnew), "\n");
-    float etype = readbyte();
+    local float classtype = readbyte();
     string s;
-    switch (etype) {
+    
+    if (self.classnum != classtype)
+	{
+		if (self.removefunc)
+			self.removefunc();
+		isnew = TRUE;
+		self.classnum = classtype;
+	}
+    print("Classtype: ", ftos(classtype));
+
+    switch (classtype) {
         case MSG_FLAGINFO:
             s = readstring();
             print("CSQC_Ent_Update, Flag info: ", s, "\n");
             break;
+        case CLASS_EXPLOSION:
+            print("Parsing explosion\n");
+            ParseExplosion(isnew);
+            break;
+        case CLASS_ROCKET:
+            print("Parsing rocket\n");
+            ParseRocketClass(isnew);
+            break;
         default:
-            error("Unhandled CSQC entity\n"); //you can change it to a print, but if you're not using sv_csqcdebug 1 doing so would just confuse people over the real cause.
+            error("Unrecognised entity class: Your csqc needs updating");            
             return;
     }
 };
@@ -368,6 +388,11 @@ noref void CSQC_Input_Frame() {
             }
         }
     }
+    if (input_buttons&1  && getstatf(STAT_HEALTH) > 0) {   
+        if (time_of_last_rocket < (time - 0.8)) {
+            time_of_last_rocket = CS_W_FireRocket();
+        }
+     }
 }
 
 float(float save, float take, vector inflictororg) CSQC_Parse_Damage = {
