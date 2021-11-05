@@ -164,9 +164,6 @@ void () W_Precache = {
     precache_sound("misc/killsoundteam.wav");
 };
 
-.vector source;
-.float starttime;
-
 float () crandom = {
     return (2 * (random() - 0.5));
 };
@@ -1046,6 +1043,7 @@ float(entity toplayer) SendRocket =
 {
 	vector v;
 	v = self.source + self.velocity*(time-self.starttime);
+    //v = self.origin;
 	WriteByte(MSG_ENTITY, CLASS_ROCKET);
 	WriteCoord(MSG_ENTITY, v_x);
 	WriteCoord(MSG_ENTITY, v_y);
@@ -1172,13 +1170,14 @@ void () W_FireRocket = {
     setsize(newmis, '0 0 0', '0 0 0');
     setorigin(newmis, self.origin + v_forward * 8 + '0 0 16');
 
+    newmis.source = newmis.origin;
+    newmis.starttime = time;
+
     if (project_weapons) {
         AL_ProjectProjectile(newmis);
     }
 
-    newmis.source = newmis.origin;
-	newmis.SendEntity = SendRocket;
-	newmis.starttime = time;
+	newmis.SendEntity = SendRocket;	 
 	newmis.SendFlags = FULLSEND;
 };
 

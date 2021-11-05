@@ -162,6 +162,10 @@ void end_sys_globals;
 .entity goalentity;             // a movetarget or an enemy
 .float spawnflags;
 
+// CSQC rockets
+.float starttime;
+.vector source;
+
 .string target;
 .string targetname;
 .string targetsequence;

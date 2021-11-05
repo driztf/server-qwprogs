@@ -5,7 +5,7 @@ float() RocketProject =
 	oldorg = self.origin;
  
 	self.origin = self.source + self.velocity * (time - self.starttime);
-	
+
 	//Do the trail thing, if possible.
 	trailparticles(particleeffectnum("tr_rocket"), self, self.origin, oldorg);
 
@@ -33,7 +33,7 @@ nonstatic void(float isnew) ParseRocketClass =
 	self.angles_x*=-1;
 	makevectors(self.angles);
 	self.angles_x*=-1;
-	self.velocity = v_forward*1000;
+	self.velocity = v_forward*900;
 	self.origin = self.source;
 
 	setmodel(self, "progs/missile.mdl");
@@ -55,12 +55,20 @@ nonstatic void(float isnew) ParseExplosion =
 		pointparticles(particleeffectnum("te_explosion"), org);
 	}
 
-	self.drawmask = 0;	//don't draw it any more.
+	self.drawmask = 0;
+	remove(self);	//don't draw it any more.
 };
 
 void() CS_W_Explode = {
     print("touch!");
     self.drawmask = 0;
+	remove(self);
+}
+
+void() SUB_Remove = {
+	print("Removing");
+	self.drawmask = 0;
+	remove(self);
 }
 
 float() CS_W_FireRocket = 
@@ -79,11 +87,17 @@ float() CS_W_FireRocket =
     rocket.drawmask = MASK_ENGINE;
     rocket.predraw = RocketProject;
     rocket.starttime = rocket_time;
+	rocket.movetype = MOVETYPE_FLYMISSILE;
 
     rocket.velocity = v_forward * 900;
     rocket.angles = vectoangles(rocket.velocity);
     rocket.source = rocket.origin;
-    rocket.touch = CS_W_Explode;
+	rocket.frame1time = 0.05;
+	
+	local float player_ping_s = getplayerkeyfloat(player_localnum, INFOKEY_P_PING) / 1000;
+
+	rocket.think = SUB_Remove;
+
     sound (self, CHAN_WEAPON, "weapons/sgun1.wav", 1, ATTN_NORM);
     return rocket_time;
 }

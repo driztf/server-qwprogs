@@ -113,8 +113,12 @@ string vote_list_filter;
 .float max_val;
 .float votecount;
 .float localmap;
+
+
+/* CSQC rockets */
 .float starttime;
 .vector source;
+.float expiretime;
 
 float(string) GetDrawPanel;
 void(string id, string identify) Hud_DrawIdentifyPanel;

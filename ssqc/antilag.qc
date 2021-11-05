@@ -21,6 +21,8 @@ void AL_ProjectProjectile (entity projectile) {
       // This is preferable to unhappy low ping players.
       traceline(newmis.origin, projected_origin, 0, self);
 
+      newmis.starttime = newmis.starttime - player_ping_s;
+
       if (trace_fraction < 1) {
           projected_origin = trace_endpos;
       }
