@@ -11,7 +11,7 @@ void AL_ProjectProjectile (entity projectile) {
           return;
       }
               
-      local float time_offset = (player_ping_s / 2);
+      local float time_offset = project_full_latency ? player_ping_s : (player_ping_s / 2);
       local vector projected_origin = projectile.origin + (projectile.velocity * time_offset);
 
       // Rewind projectile is preferable but unavailable. This would rewind and replay the projectile from origin

@@ -606,6 +606,9 @@ void () DecodeLevelParms = {
         // max projection latency (default 100ms)
         project_weapons_max_latency = CF_GetSetting("pwml", "project_weapons_max_latency", ftos(0.1));
 
+        // project full player ping or half
+        project_full_latency = CF_GetSetting("pfl", "project_full_latency", "off");
+
         // delay respawning by this many seconds [0]
         Role_None.respawn_delay_time = CF_GetSetting("rd", "respawn_delay", "0");
         if (Role_None.respawn_delay_time) {
